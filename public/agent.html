@@ -154,8 +154,6 @@ async function main(){
   var agentTemplate = Handlebars.compile($('#agent-template').html());
   var ridAgent = 'org.sovrin.agent'
   var ridEdge = 'org.sovrin.edge'
-  var eventRE = /^\/sky\/event\/([^\/]*)\/([^\/]*)\/([^\/]*)\/([^\/]*)/
-  //var queryRE = /^\/sky\/query\/([^\/]*)\/([^\/]*)\/([^\/]*)/
   var formToJSON = function (form) {
     var json = {}
     if(form){
@@ -216,7 +214,6 @@ async function main(){
     remove_cursor_wait()
     $theSection.find('.js-ajax-link').click(async function (e) {
       e.preventDefault()
-      var href = $(this).attr('href')
       cursor_wait()
       $.getJSON($(this).attr('href'), {}, function () {
         doDisplay()
