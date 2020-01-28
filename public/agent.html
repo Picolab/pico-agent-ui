@@ -140,12 +140,6 @@ async function main(){
     })
 
   console.log('myself:', JSON.stringify(myself));
-  var hasRids = []
-  await $.getJSON('/sky/cloud/'+agentECI+'/io.picolabs.wrangler/installedRulesets',
-    function(data){
-      hasRids = data
-    })
-
   $('#refresh').click(function (e) {
     e.preventDefault()
     cursor_wait()
@@ -164,9 +158,29 @@ async function main(){
     return json
   }
   var $theSection = $('#section')
+  $theSection.on('click','.js-ajax-link',function (e) {
+    e.preventDefault()
+    cursor_wait()
+    $.getJSON($(this).attr('href'), {}, function () {
+      doDisplay()
+    })
+  })
+  $theSection.on('submit','.js-ajax-form',function (e) {
+    e.preventDefault()
+    cursor_wait()
+    $.getJSON($(this).attr('action'), formToJSON(this), function () {
+      doDisplay()
+    })
+  })
   var doDisplay = async function(){
     var pageName = 'Agent'
     document.title = myself.name + ' ' + pageName
+    var hasRids = []
+    await $.getJSON('/sky/cloud/'+agentECI+'/io.picolabs.wrangler/installedRulesets',
+      function(data){
+        hasRids = data
+      })
+
     var isAgent = hasRids.includes(ridAgent)
     var isEdge = hasRids.includes(ridEdge)
     if(isEdge){
@@ -212,20 +226,6 @@ async function main(){
     }
     $theSection.html(agentTemplate(agentUI))
     remove_cursor_wait()
-    $theSection.find('.js-ajax-link').click(async function (e) {
-      e.preventDefault()
-      cursor_wait()
-      $.getJSON($(this).attr('href'), {}, function () {
-        doDisplay()
-      })
-    })
-    $theSection.find('.js-ajax-form').submit(async function (e) {
-      e.preventDefault()
-      cursor_wait()
-      $.getJSON($(this).attr('action'), formToJSON(this), function () {
-        doDisplay()
-      })
-    })
   }
   doDisplay()
 }
