@@ -16,8 +16,17 @@ The rulesets that need to be installed in a pico so that it becomes a Pico Agent
 The same repository also contains rulesets which can be used to deploy and operate an agency.
 An agency can be used to create and host a new Pico Agent.
 
+If you are running an Agency, you can place the file `agent.html` in your pico-engine `public` folder.
+Then you can instruct your clients, instead of logging in, to use their DID in a URI like this one,
+replacing "HOST" and "PORT" with your pico-engine host and port,
+and "DID" with their DID.
+
+```
+https://HOST:PORT/agent.html#DID
+```
 <sup>*</sup> A pico-engine used to host an agency SHOULD be run using `https`
 (typically by setting up an `nginx` server that reverse proxies to the pico-engine).
 In this case, the regular pico-engine UI SHOULD NOT be accessible to anyone other 
 than a system administrator.
 This is done by requiring a password for all of the `/api` routes into the pico-engine.
+
