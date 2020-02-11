@@ -166,13 +166,20 @@ async function main(){
   })
   var doDisplay = async function(){
     var whereSpec = location.hash.substring(1).split('-')
-    var agentECI = whereSpec[0] //TODO handle missing location.hash
+    var agentECI = whereSpec[0]
     var myself
-    await $.getJSON('/sky/cloud/'+agentECI+'/io.picolabs.wrangler/myself',
-      function(data){
-        myself = data
-      })
-
+    try {
+      await $.getJSON('/sky/cloud/'+agentECI+'/io.picolabs.wrangler/myself',
+        function(data){
+          myself = data
+        })
+    } catch(error){
+      console.error(error)
+    }
+    if(myself===undefined){
+      location.hash = prompt("Enter Pico Agent DID")
+      location.reload()
+    }
     console.log('myself:', JSON.stringify(myself));
     document.title = myself.name + ' ' + 'Agent'
     var hasRids = []
