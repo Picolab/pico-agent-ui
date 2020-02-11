@@ -132,14 +132,6 @@ async function main(){
     $('.cursor-wait').removeClass('cursor-wait')
   }
   cursor_wait()
-  var agentECI = location.hash.substring(1)
-  var myself
-  await $.getJSON('/sky/cloud/'+agentECI+'/io.picolabs.wrangler/myself',
-    function(data){
-      myself = data
-    })
-
-  console.log('myself:', JSON.stringify(myself));
   $('#refresh').click(function (e) {
     e.preventDefault()
     cursor_wait()
@@ -173,8 +165,16 @@ async function main(){
     })
   })
   var doDisplay = async function(){
-    var pageName = 'Agent'
-    document.title = myself.name + ' ' + pageName
+    var whereSpec = location.hash.substring(1).split('-')
+    var agentECI = whereSpec[0] //TODO handle missing location.hash
+    var myself
+    await $.getJSON('/sky/cloud/'+agentECI+'/io.picolabs.wrangler/myself',
+      function(data){
+        myself = data
+      })
+
+    console.log('myself:', JSON.stringify(myself));
+    document.title = myself.name + ' ' + 'Agent'
     var hasRids = []
     await $.getJSON('/sky/cloud/'+agentECI+'/io.picolabs.wrangler/installedRulesets',
       function(data){
@@ -225,6 +225,22 @@ async function main(){
       agentUI.disabled = true
     }
     $theSection.html(agentTemplate(agentUI))
+    if (whereSpec.length > 1) {
+      var $theLi = $('li#' + whereSpec[1])
+      $theLi.find('input').first().trigger('click')
+      $theSection.scrollTop = $theLi.outerHeight() - 300
+      setTimeout(function(){
+        $theLi.find('button').first().prev().focus()
+      },300)
+    }
+    $('#connection-list li > input').click(function() {
+      var base_hash = whereSpec[0]
+      if (this.checked) {
+        location.hash = base_hash + '-' + $(this).parent().attr('id')
+      } else {
+        location.hash = base_hash
+      }
+    })
     remove_cursor_wait()
   }
   doDisplay()
