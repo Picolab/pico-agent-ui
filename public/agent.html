@@ -96,12 +96,23 @@
         {{else}}
           <h3>No connections</h3>
         {{/if}}
+        {{#if plugins}}
+          <h3>Plugin Protocols</h3>
+          <ul>
+          {{#each plugins}}
+            <li title='{{piuri}}'>{{name}}</li>
+          {{/each}}
+          </ul>
+        {{/if}}
         <h3>Technical details</h3>
         <input type="checkbox" id="connection-technical-details">
         <label for="connection-technical-details">shown</label>
         <pre class="connection-detail">{{text}}</pre>
       {{/if}}
       </div>
+      {{#each plugins}}
+        <iframe src="/sky/cloud/{{../eci}}/{{ui_html_rid}}/{{ui_html_name}}.html" style="position:fixed;right:5px;bottom:5px;width:500px;height:500px;border:1px solid black"></iframe>
+      {{/each}}
     </script>
     <style type="text/css">
 .cursor-wait { cursor: wait !important; }
@@ -228,6 +239,19 @@ async function main(){
         }
       }
       agentUI.text = JSON.stringify(agentUI.ui, undefined, 2)
+      agentUI.plugins = []
+      await $.getJSON('/sky/event/'+agentECI+'/plugins/agent/request_for_plug_ins',
+        function(data){
+          var directives = data.directives
+          for(var i=0; i<directives.length; ++i){
+            var d = directives[i]
+            if(d.name==='spec'){
+              agentUI.plugins.push(d.options)
+            }
+          }
+          //agentUI.plugins.push(
+            //{ui_html_rid:'org.sovrin.tic_tac_toe',ui_html_name:'html'})
+        })
     } else {
       agentUI.disabled = true
     }
